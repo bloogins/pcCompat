@@ -1,4 +1,5 @@
 const { join } = require('path');
+const { rename } = require('fs').promises
 const { Plugin } = require('@vizality/entities');
 const { patch, unpatch } = require('@vizality/patcher');
 const mod = require('module');
@@ -7,7 +8,13 @@ const restoreLocalStorage = require('./localStorage');
 const toProxy = require('./toProxy');
 
 module.exports = class PCCompat extends Plugin {
-  onStart () {
+  async onStart () {
+    
+    if (!__dirname.endsWith('00pccompat')) {
+      await rename(__dirname, join(__dirname, '..', '00pccompat'))
+      window.location.reload()
+    }
+    
     const Icon = require('@vizality/components/Icon');
     Icon.type({ name: 'Discord' });
 
