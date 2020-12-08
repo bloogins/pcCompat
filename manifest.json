@@ -3,5 +3,6 @@
   "description": "Plugin Description",
   "author": "Plugin Author",
   "license": "Plugin License",
-  "version": "0.0.1"
+  "version": "0.0.1",
+  "icon": "assets/icon.png"
 }
