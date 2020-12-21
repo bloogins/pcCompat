@@ -41,7 +41,7 @@ module.exports = class PCCompat extends Plugin {
             ...opts
           }),
           unregisterSettings: (id) => {
-            vizality.api.router.unregisterRoute(`/plugin/${id}`);
+            vizality.api.router.unregisterRoute(`/dashboard/plugins/${id}`);
             vizality.api.settings.unregisterSettings(id);
           }
         }),
