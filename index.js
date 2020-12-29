@@ -16,7 +16,7 @@ module.exports = class PCCompat extends Plugin {
     }
     
     const Icon = require('@vizality/components/Icon');
-    Icon.type({ name: 'Discord' });
+    Icon.default.type({ name: 'Discord' });
 
     this._fontAwesome = document.createElement('link');
     this._fontAwesome.setAttribute('rel', 'stylesheet');

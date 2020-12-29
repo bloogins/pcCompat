@@ -1,1 +1,1 @@
-module.exports = require('@vizality/entities')
+module.exports = require('@vizality/http')

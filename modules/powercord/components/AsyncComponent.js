@@ -1,1 +1,1 @@
-module.exports = require('@vizality/components/AsyncComponent')
+module.exports = require('@vizality/components/AsyncComponent').default
