@@ -1,1 +1,1 @@
-module.exports = require('@vizality/components').Icon.default;
+module.exports = require('@vizality/components').Icon;

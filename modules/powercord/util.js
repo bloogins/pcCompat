@@ -24,7 +24,7 @@ module.exports = {
   ...require('@vizality/util/react'),
   ...dom,
   waitFor: dom.waitForElement,
-  sleep: require('@vizality/util/sleep'),
+  sleep: require('@vizality/util/time').sleep,
   formatTime,
   camelCaseify: require('@vizality/util/string').toCamelCase,
   goToOrJoinServer,
