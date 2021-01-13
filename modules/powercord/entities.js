@@ -7,21 +7,20 @@ class Plugin extends entities.Plugin {
         super(...props)
         if (badPlugins.includes(this.__proto__.constructor.name)) {
             const toastId = `pccompat-bad-plugin-${this.addonId}`
-            vizality.api.notices.sendToast(toastId, {
-              header: 'Incompatible plugin!',
-              content: `${this.__proto__.constructor.name} is incompatible with PCCompat.`,
-              type: 'error',
-              buttons: [ {
-                text: `Disable ${this.__proto__.constructor.name}`,
-                color: 'red',
-                look: 'outlined',
-                onClick: () => {
-                    vizality.manager.plugins.disable(this.addonId)
-                    vizality.api.notices.closeToast(toastId)
-                }
-              } ]
-            });
-            this.start = () => {}
+            this.start = () =>             vizality.api.notices.sendToast(toastId, {
+                header: 'Incompatible plugin!',
+                content: `${this.__proto__.constructor.name} is incompatible with PCCompat.`,
+                type: 'error',
+                buttons: [ {
+                  text: `Disable ${this.__proto__.constructor.name}`,
+                  color: 'red',
+                  look: 'outlined',
+                  onClick: () => {
+                      vizality.manager.plugins.disable(this.addonId)
+                      vizality.api.notices.closeToast(toastId)
+                  }
+                } ]
+              });
             this.stop = () => {}
             return
         }
