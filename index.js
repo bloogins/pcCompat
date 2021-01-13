@@ -1,7 +1,6 @@
 const { join } = require('path');
 const { rename } = require('fs').promises
 const { Plugin } = require('@vizality/entities');
-const { patch, unpatch } = require('@vizality/patcher');
 const mod = require('module');
 const restoreLocalStorage = require('./localStorage');
 const toProxy = require('./toProxy');
@@ -34,13 +33,10 @@ module.exports = class PCCompat extends Plugin {
       }),
       api: toProxy(vizality.api, {
         settings: toProxy(vizality.api.settings, {
-          registerSettings: function (id, opts) {
-            console.log(this)
-            return vizality.api.settings.registerSettings({
+          registerSettings: (id, opts) => vizality.api.settings.registerSettings({
             id,
             ...opts
-          })
-        },
+          }),
           unregisterSettings: (id) => {
             vizality.api.settings.unregisterSettings(id);
           }
@@ -54,17 +50,6 @@ module.exports = class PCCompat extends Plugin {
 
     restoreLocalStorage();
 
-    const _this = this;
-    patch('pcCompat-load', Plugin.prototype, '_load', function (args, ret) {
-      if (this.startPlugin) {
-        _this.log('Patching', this.addonId);
-        this.entityID = this.addonId
-        this.start = this.startPlugin;
-        this.stop = this.pluginWillUnload;
-        this.loadStylesheet = this.injectStyles;
-      }
-      return args;
-    }, true);
     const toReload = this.settings.get('tempDisabled', []);
     toReload.forEach((e) => {
       try {
@@ -98,7 +83,6 @@ module.exports = class PCCompat extends Plugin {
     });
 
     this.settings.set('tempDisabled', tempDisabled);
-    unpatch('pcCompat-load');
     delete vizality.manager.plugins.mount;
     mod.globalPaths = mod.globalPaths.filter(x => x !== this.path);
     Object.keys(require.cache).filter(x => x.includes('/modules/powercord'))?.forEach((x) => delete require.cache[x]);
