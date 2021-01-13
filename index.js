@@ -33,12 +33,12 @@ module.exports = class PCCompat extends Plugin {
       }),
       api: toProxy(vizality.api, {
         settings: toProxy(vizality.api.settings, {
-          registerSettings: (id, opts) => vizality.api.settings.registerSettings({
+          registerSettings: (id, opts) => vizality.api.settings._registerSettings({
             id,
             ...opts
           }),
           unregisterSettings: (id) => {
-            vizality.api.settings.unregisterSettings(id);
+            vizality.api.settings._unregisterSettings(id);
           }
         }),
         i18n: toProxy(vizality.api.i18n, {
