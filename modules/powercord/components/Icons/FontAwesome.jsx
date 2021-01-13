@@ -1,4 +1,4 @@
-const { React } = require('@vizality/react');
+const React = require('react');
 
 module.exports = React.memo(
   (props) => {
