@@ -7,7 +7,7 @@ const restoreLocalStorage = require('./localStorage');
 const toProxy = require('./toProxy');
 
 module.exports = class PCCompat extends Plugin {
-  async onStart () {
+  async start () {
     if (!__dirname.endsWith('00pccompat')) {
       await rename(__dirname, join(__dirname, '..', '00pccompat'))
       window.location.reload()
@@ -34,12 +34,15 @@ module.exports = class PCCompat extends Plugin {
       }),
       api: toProxy(vizality.api, {
         settings: toProxy(vizality.api.settings, {
-          registerSettings: (id, opts) => vizality.api.settings.registerAddonSettings({
+          registerSettings: function (id, opts) {
+            console.log(this)
+            return vizality.api.settings.registerSettings({
             id,
             ...opts
-          }),
+          })
+        },
           unregisterSettings: (id) => {
-            vizality.api.settings.unregisterAddonSettings(id);
+            vizality.api.settings.unregisterSettings(id);
           }
         }),
         i18n: toProxy(vizality.api.i18n, {
@@ -56,9 +59,9 @@ module.exports = class PCCompat extends Plugin {
       if (this.startPlugin) {
         _this.log('Patching', this.addonId);
         this.entityID = this.addonId
-        this.__proto__.onStart = this.startPlugin;
-        this.__proto__.onStop = this.pluginWillUnload;
-        this.__proto__.loadStylesheet = this.injectStyles;
+        this.start = this.startPlugin;
+        this.stop = this.pluginWillUnload;
+        this.loadStylesheet = this.injectStyles;
       }
       return args;
     }, true);
@@ -67,13 +70,13 @@ module.exports = class PCCompat extends Plugin {
       try {
         vizality.manager.plugins.enable(e);
       } catch (e) {
-        this.log('Ignoring error starting up, caused by external plugin', e);
+        this.log(e);
       }
     });
     this.settings.set('tempDisabled', []);
   }
 
-  onStop () {
+  stop () {
     const tempDisabled = [];
     vizality.manager.plugins.items.forEach((e, i) => {
       try {
@@ -83,8 +86,8 @@ module.exports = class PCCompat extends Plugin {
             vizality.manager.plugins.disable(i);
             tempDisabled.push(i);
             this.log('Stopped ', i);
-            delete plugin.__proto__.onStart;
-            delete plugin.__proto__.onStop;
+            delete plugin.__proto__.start;
+            delete plugin.__proto__.stop;
             delete plugin.__proto__.loadStylesheet;
             delete plugin.entityID
           }
