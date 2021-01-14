@@ -51,39 +51,36 @@ module.exports = class PCCompat extends Plugin {
     restoreLocalStorage();
 
     const toReload = this.settings.get('tempDisabled', []);
-    toReload.forEach((e) => {
+    for (const e of toReload) {
       try {
-        vizality.manager.plugins.enable(e);
+        if (!vizality.manager.plugins.get(e) || !vizality.manager.plugins.isEnabled(e)) {
+          await vizality.manager.plugins.mount(e);
+          await vizality.manager.plugins.get(e)._load(true);
+        }
       } catch (e) {
         this.log(e);
       }
-    });
-    this.settings.set('tempDisabled', []);
+    };
+    this.settings.delete('tempDisabled', []);
   }
 
-  stop () {
+  async stop () {
     const tempDisabled = [];
-    vizality.manager.plugins.items.forEach((e, i) => {
+    for (const [id, e] of vizality.manager.plugins.items) {
       try {
-        const plugin = vizality.manager.plugins.items.get(i);
-        if (e.startPlugin) {
-          if (vizality.manager.plugins.isEnabled(i)) {
-            vizality.manager.plugins.disable(i);
-            tempDisabled.push(i);
-            this.log('Stopped ', i);
-            delete plugin.__proto__.start;
-            delete plugin.__proto__.stop;
-            delete plugin.__proto__.loadStylesheet;
-            delete plugin.entityID
+        if (e._isPcCompat) {
+          if (vizality.manager.plugins.isEnabled(id)) {
+            await vizality.manager.plugins.unmount(id, true);
+            tempDisabled.push(id);
+            this.log('Stopped ', id);
           }
         }
       } catch (e) {
-        this.log('Ignoring error shutting down, caused by external plugin', e);
+        this.log('Ignoring error shutting down, caused by external plugin', id);
       }
-    });
+    }
 
     this.settings.set('tempDisabled', tempDisabled);
-    delete vizality.manager.plugins.mount;
     mod.globalPaths = mod.globalPaths.filter(x => x !== this.path);
     Object.keys(require.cache).filter(x => x.includes('/modules/powercord'))?.forEach((x) => delete require.cache[x]);
     delete window.powercord;
